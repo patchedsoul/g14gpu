@@ -1,0 +1,2 @@
+#!/bin/bash
+lspci -k -s 01:00.0 | sed -n "s/\s*Kernel driver in use: \(\w*\)/\1/p"

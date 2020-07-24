@@ -1,0 +1,32 @@
+#!/bin/bash
+echo "Starting Network"
+virsh --connect=qemu:///system net-start default
+echo "Starting VM"
+virsh --connect=qemu:///system start win10
+echo "Starting Scream"
+scream -o pulse -i virbr0 &
+echo "Starting Looking Glass"
+looking-glass-client -s no -K 120 -d yes -g egl -a -M no &
+while [ "$command" != "stop" ]; do
+	read command
+done
+echo "Stopping VM..."
+#stop
+virsh --connect=qemu:///system shutdown win10
+echo "Killing Looking Glass and Scream..."
+kill -9 $(jobs -p)
+vmstate=$(virsh --connect=qemu:///system domstate win10)
+echo "Waiting for shutdown..."
+while [ "$vmstate" != "shut off" ]; do
+	sleep 1
+	vmstate=$(virsh --connect=qemu:///system domstate win10)
+done
+sleep 1
+echo "VM is off, unbinding from vfio-pci"
+sudo unbind 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
+sleep 1
+sudo modprobe nvidia NVreg_DynamicPowerManagement=0x02
+sleep 2
+sudo systemctl start bumblebeed
+sleep 1
+clrgpu
