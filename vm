@@ -7,7 +7,7 @@ echo "Starting Scream"
 scream -o pulse -i virbr0 &
 echo "Starting Looking Glass"
 #looking-glass-client -s no -d yes -g egl -a -M no egl:vsync yes &
-looking-glass-client -s -d -g opengl -a -M -K 120
+looking-glass-client -s -d -g egl -a -M -k -K 120
 while [ "$command" != "stop" ]; do
 	read command
 done
