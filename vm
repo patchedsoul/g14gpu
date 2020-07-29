@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "Reserving hugepages"
+echo 16 | sudo tee /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
 echo "Starting Network"
 virsh --connect=qemu:///system net-start default
 echo "Starting VM"
@@ -7,7 +9,7 @@ echo "Starting Scream"
 scream -o pulse -i virbr0 &
 echo "Starting Looking Glass"
 #looking-glass-client -s no -d yes -g egl -a -M no egl:vsync yes &
-looking-glass-client -s -d -g egl -a -M -k -K 120
+looking-glass-client -s -d -g egl -a -M -K 120 &
 while [ "$command" != "stop" ]; do
 	read command
 done
@@ -24,9 +26,13 @@ while [ "$vmstate" != "shut off" ]; do
 	vmstate=$(virsh --connect=qemu:///system domstate win10)
 done
 sleep 1
-echo "VM is off, unbinding from vfio-pci"
+echo "VM is off"
+echo "Freeing up memory"
+echo 0 | sudo tee /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
+echo "Unbinding from vfio-pci"
 sudo unbind 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
 sleep 1
+echo "Enabling GPU power management"
 sudo modprobe nvidia NVreg_DynamicPowerManagement=0x02
 sleep 2
 sudo systemctl start bumblebeed
