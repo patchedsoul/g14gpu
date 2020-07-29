@@ -1,8 +1,12 @@
 #!/bin/bash
 echo "Reserving hugepages"
-echo 16 | sudo tee /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
+echo 8192 | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+echo 3 | sudo tee /proc/sys/vm/drop_caches
+echo 1 | sudo tee /proc/sys/vm/compact_memory
 echo "Starting Network"
 virsh --connect=qemu:///system net-start default
+sudo systemctl start smb nmb
+sleep 2
 echo "Starting VM"
 virsh --connect=qemu:///system start win10
 echo "Starting Scream"
@@ -28,7 +32,7 @@ done
 sleep 1
 echo "VM is off"
 echo "Freeing up memory"
-echo 0 | sudo tee /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
+echo 0 | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
 echo "Unbinding from vfio-pci"
 sudo unbind 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
 sleep 1
@@ -36,5 +40,6 @@ echo "Enabling GPU power management"
 sudo modprobe nvidia NVreg_DynamicPowerManagement=0x02
 sleep 2
 sudo systemctl start bumblebeed
+sudo systemctl stop smb nmb
 sleep 1
 clrgpu
