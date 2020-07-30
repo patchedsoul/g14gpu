@@ -15,7 +15,11 @@ echo "Starting Looking Glass"
 #looking-glass-client -s no -d yes -g egl -a -M no egl:vsync yes &
 looking-glass-client -s -d -g egl -a -M -K 120 &
 while [ "$command" != "stop" ]; do
-	read command
+	if jobs | grep looking | grep Running; then
+		read command
+	else
+		looking-glass-client -s -d -g egl -a -M -K 120 &
+	fi
 done
 sudo whoami
 echo "Stopping VM..."
