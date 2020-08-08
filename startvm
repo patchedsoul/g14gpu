@@ -1,8 +1,10 @@
 #!/bin/bash
-if [ `which-driver-for-gpu` == "nvidia" ]; then
-    sudo systemctl stop bumblebeed
-    sleep 1
-    sudo bind 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
-fi
+#export PATH=/bedrock/cross/pin/bin:/bedrock/bin:/usr/local/bin:/usr/local/sbin:/opt/bin:/opt/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/snap/bin:/bedrock/cross/bin:/home/cole/g14gpu
+cd /home/cole/g14gpu
+#if [ `which-driver-for-gpu` == "nvidia" ]; then
+sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._ON" > /proc/acpi/call'
+sleep 1
+sudo binddev 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
+#fi
 vm
-#sudo unbind 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
+#sudo unbinddev 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3

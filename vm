@@ -38,12 +38,13 @@ echo "VM is off"
 echo "Freeing up memory"
 echo 0 | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
 echo "Unbinding from vfio-pci"
-sudo unbind 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
+unbinddev 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
 sleep 1
 echo "Enabling GPU power management"
-sudo modprobe nvidia NVreg_DynamicPowerManagement=0x02
+#sudo modprobe nvidia NVreg_DynamicPowerManagement=0x02
+sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'
 sleep 2
-sudo systemctl start bumblebeed
+#sudo systemctl start bumblebeed
 sudo systemctl stop smb nmb
 sleep 1
-clrgpu
+#clrgpu

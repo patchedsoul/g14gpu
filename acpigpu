@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#case "$1" in
+#    pre)
+#	/home/cole/g14gpu/gpuon.sh  ;;
+#    post)
+#        /home/cole/g14gpu/gpuoff.sh  ;;
+#esac
+
+
+if [ "${1}" == "pre" ]; then
+	bash /home/cole/g14gpu/gpuon.sh
+elif [ "${1}" == "post" ]; then
+	bash /home/cole/g14gpu/gpuoff.sh
+fi

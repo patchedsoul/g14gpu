@@ -3,6 +3,7 @@ modprobe vfio-pci
 for dev in "$@"; do
     vendor=$(cat /sys/bus/pci/devices/$dev/vendor)
     device=$(cat /sys/bus/pci/devices/$dev/device)
+    echo $vendor $device > /sys/bus/pci/drivers/vfio-pci/new_id
     if [ -e /sys/bus/pci/devices/$dev/driver ]; then
             #echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
 	    rmmod nvidia_drm
@@ -10,6 +11,6 @@ for dev in "$@"; do
 	    rmmod nvidia
 	    echo "Unbound old driver"
     fi
-    echo $vendor $device > /sys/bus/pci/drivers/vfio-pci/new_id
+    #echo $vendor $device > /sys/bus/pci/drivers/vfio-pci/new_id
     echo "Bound VFIO driver"
 done
