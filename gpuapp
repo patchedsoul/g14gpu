@@ -1,0 +1,28 @@
+#!/bin/bash
+function exit_script {
+        sleep 0.5
+        if nvidia-smi | grep "No running processes found"; then
+                sudo rmmod nvidia_modeset
+                sudo rmmod nvidia
+                sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'
+        fi
+}
+
+trap exit_script SIGINT
+trap exit_script SIGTERM
+if lsmod | grep nvidia; then
+	vblank_mode=0 primusrun "$@"
+else
+	sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._ON" > /proc/acpi/call'
+	sleep 1
+	vblank_mode=0 primusrun "$@"
+fi
+exit_script
+#sleep 1
+#if nvidia-smi | grep "No running processes found"; then
+#	sudo rmmod nvidia_modeset
+#	sudo rmmod nvidia
+#	sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'
+#fi
+
+
