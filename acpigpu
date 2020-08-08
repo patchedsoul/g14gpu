@@ -1,15 +1,13 @@
 #!/bin/bash
 
-#case "$1" in
-#    pre)
-#	/home/cole/g14gpu/gpuon.sh  ;;
-#    post)
-#        /home/cole/g14gpu/gpuoff.sh  ;;
-#esac
-
-
 if [ "${1}" == "pre" ]; then
-	bash /home/cole/g14gpu/gpuon.sh
+	sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._ON" > /proc/acpi/call'
+	sleep 1 # The GPU needs a bit of time to ensure that it's on before suspend
 elif [ "${1}" == "post" ]; then
-	bash /home/cole/g14gpu/gpuoff.sh
+	if xrandr --listproviders | grep NVIDIA; then
+		echo "GPU is in use for PRIME, keeping on"
+	else
+		sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'
+        	echo "GPU powered off"
+	fi  	
 fi
