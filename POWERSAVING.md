@@ -6,7 +6,10 @@ Simply unloading the driver or enabling powersaving feaures isn't enough.
 
 In the future, the nvidia driver may allow for entering D3 (full power off) on it's own, but for now, there's another solution: acpi calls. This requires the `acpi_call` kernel module, on Arch this can be installed with the `acpi_call` or `acpi_call-dkms` package.
 
-Thanks to /u/FailSpai on reddit for finding the correct ACPI call. The GPU can be powered off and on with the call "\\_SB.PCI0.GPP0.PG00". For example, to turn off the GPU completely, run `sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'`. Similarly, to turn it back on, `sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._ON" > /proc/acpi/call'`. You can verify the state of the GPU by running `sudo sh -c 'echo "\\_SB.PCI0.GPP0.PEGP.SGST" > /proc/acpi/call'`, then running `sudo cat /proc/acpi/call`. 0x0 means off, and anything above 0 means on. Alternatively, just look at the power draw, `cat /sys/class/power_supply/BAT0/power_now` and if it's under 10-11w then it's off.
+Thanks to /u/FailSpai on reddit for finding the correct ACPI call. The GPU can be powered off and on with the call "\\_SB.PCI0.GPP0.PG00". For example, to turn off the GPU completely, run `sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'`. Similarly, to turn it back on, `sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._ON" > /proc/acpi/call'`. You can verify the state of the GPU by running `sudo sh -c 'echo "\\_SB.PCI0.GPP0.PEGP.SGST" > /proc/acpi/call'`, then running `sudo cat /proc/acpi/call`. 0x0 means off, and anything above 0 means on. Alternatively, just look at the total system power draw (must be unplugged from AC to get a number), `cat /sys/class/power_supply/BAT0/power_now` and if it's under 10-11w then it's off.
+
+Note that you can really only power the GPU off when its not in use. For example, powering it off with a render offload setup will leave the GPU unusable until X is restarted, and may cause issues during shutdown/reboot. 
+You must be in an X session that does not touch the GPU at all. See below for an optimus-manager configuration for an automated way to switch between powersaving and GPU active mode.
 
 This allows for the same, or better, idle power draw than Windows, as long as you have done other tweaks (disable boost, change CPU governor, etc).
 
