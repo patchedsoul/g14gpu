@@ -16,13 +16,13 @@ If the GPU is powered off during suspend, the system will hang. This can be solv
 #!/bin/bash
 
 if [ "${1}" == "pre" ]; then
-	sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._ON" > /proc/acpi/call'
+    sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._ON" > /proc/acpi/call'
     sleep 2 # The GPU needs a bit of time to ensure that it's on before suspend
 elif [ "${1}" == "post" ]; then
-	if xrandr --listproviders | grep NVIDIA; then
-	    echo "GPU is in use for PRIME, keeping on"
+    if xrandr --listproviders | grep NVIDIA; then
+        echo "GPU is in use for PRIME, keeping on"
     else
-	    sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'
+        sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'
         echo "GPU powered off"
     fi  
 fi
