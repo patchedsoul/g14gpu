@@ -1,5 +1,8 @@
 # Asus Zephyrus G14 GPU powersaving
 
+Please see the new guide!
+https://gitlab.com/asus-linux/website/-/blob/master/content/wiki/rog-zephyrus/g14-and-g15/troubleshooting/g14-nvidia-powersavings-workaround.md
+
 In order to get the best battery life, the dedicated GPU must be disabled. 
 
 Simply unloading the driver or enabling powersaving feaures isn't enough.
