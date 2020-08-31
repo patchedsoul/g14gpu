@@ -1,5 +1,8 @@
 # Asus Zephyrus G14 GPU powersaving
 
+*Please see the new, updated guide!*
+https://asus-linux.org/wiki/g14-and-g15/troubleshooting/g14-nvidia-powersavings-workaround/
+
 In order to get the best battery life, the dedicated GPU must be disabled. 
 
 Simply unloading the driver or enabling powersaving feaures isn't enough.
@@ -30,7 +33,30 @@ elif [ "${1}" == "post" ]; then
     fi  
 fi
 ```
-
+## Optimus Manager
 As the script suggests, you can't power off the GPU while it's in use. I would recommend using optimus-manager-amd (available on the AUR as optimus-manager-amd-git) to automatically handle switching Xorg sessions and automatically depowering the GPU when it's not used. You can see my config files for optimus-manager-amd [here](https://git.deck.sh/shark/g14gpu/-/tree/master/etc/optimus-manager). When in `amd` mode, I only draw 5.5-6w on idle, and it bounces around up to 10w when using firefox with the second half of the cores disabled.
+
+## Bumblebee
+NEW: I've created a script that lets this work with bumblebee. Advantages of this setup includes allowing you to run applications on the GPU without having to restart X, and then as soon as there is nothing running on the GPU it reverts to full power off state. In order to set it up, install bumblebee-picasso-git from the AUR, and set up the configuration like [this](https://git.deck.sh/shark/g14gpu/-/blob/master/etc/bumblebee/bumblebee.conf). Optionally add `Option "NVreg_DynamicPowerManagement=0x02"` to xorg.conf.nvidia to enable powersaving while the GPU is in use as well.
+
+Bumblebee removed support for acpi_call natively back in 2011 or so because of stability issue, but as long as you use the suspend script, you should be fine. Place [this executable](https://git.deck.sh/shark/g14gpu/-/blob/master/gpuapp) somewhere in your $PATH, and then use `gpuapp glxgears` for example to test. Requires primusrun. 
+
+You may want to modify the suspend script a bit to use nvidia-smi instead of xrandr, because xrandr won't pick up bumblebee:
+
+```
+#!/bin/bash
+
+if [ "${1}" == "pre" ]; then
+    sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._ON" > /proc/acpi/call'
+    sleep 2 # The GPU needs a bit of time to ensure that it's on before suspend
+elif [ "${1}" == "post" ]; then
+    if nvidia-smi | grep "No running processes found"; then
+        sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'
+        echo "GPU powered off"
+    else
+        echo "GPU is in use with Bumblebee, keeping on"
+    fi  
+fi
+```
 
 Again, thanks to /u/FailSpai for digging through the ACPI tables to find the right call, you can find his comment about it [here](https://www.reddit.com/r/VFIO/comments/hx5j8q/success_with_laptop_gpu_passthrough_on_asus_rog/g0m3kvh/).
