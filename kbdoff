@@ -1,0 +1,5 @@
+#!/bin/bash
+systemctl restart asusd
+sleep 1
+asusctl -k off
+asusctl -p silent

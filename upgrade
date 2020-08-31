@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#sudo powerpill -Syu
+yay -Sy
+yay --pacman powerpill -Su --combinedupgrade

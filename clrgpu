@@ -1,2 +1,2 @@
 #!/bin/bash
-optiprime glxinfo
+/home/cole/g14gpu/gpuapp glxinfo
