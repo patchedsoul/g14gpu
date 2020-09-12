@@ -1,0 +1,10 @@
+#!/bin/bash
+#export PATH=/bedrock/cross/pin/bin:/bedrock/bin:/usr/local/bin:/usr/local/sbin:/opt/bin:/opt/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/snap/bin:/bedrock/cross/bin:/home/cole/g14gpu
+cd /home/cole/g14gpu
+#if [ `which-driver-for-gpu` == "nvidia" ]; then
+sudo sh -c 'echo "ON" > /proc/acpi/bbswitch'
+sleep 1
+sudo binddev 0000:01:00.0
+#fi
+vmrdp
+#sudo unbinddev 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
