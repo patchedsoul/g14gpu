@@ -20,7 +20,8 @@ while [ "$command" != "stop" ]; do
 	if jobs | grep looking | grep Running; then
 		read command
 	else
-		looking-glass-client -d -g egl -a -K 120 -j -m 69 -S &
+		#looking-glass-client -d -g egl -a -K 120 -j -m 69 -S &
+		echo "try typing stop dumbass"
 	fi
 done
 sudo whoami
