@@ -4,7 +4,7 @@ cd /home/cole/g14gpu
 #if [ `which-driver-for-gpu` == "nvidia" ]; then
 sudo sh -c 'echo "ON" > /proc/acpi/bbswitch'
 sleep 1
-sudo binddev 0000:01:00.0
+sudo binddev 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
 #fi
 vm
 #sudo unbinddev 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3

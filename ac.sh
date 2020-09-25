@@ -9,6 +9,7 @@ echo 1 | sudo tee /sys/devices/system/cpu/cpu12/online
 echo 1 | sudo tee /sys/devices/system/cpu/cpu13/online
 echo 1 | sudo tee /sys/devices/system/cpu/cpu14/online
 echo 1 | sudo tee /sys/devices/system/cpu/cpu15/online
-asusctl profile normal
+
 sleep 0.5 
-sudo tlp start
+#sudo tlp start
+asusctl profile normal

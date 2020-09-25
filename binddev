@@ -6,9 +6,9 @@ for dev in "$@"; do
     echo $vendor $device > /sys/bus/pci/drivers/vfio-pci/new_id
     if [ -e /sys/bus/pci/devices/$dev/driver ]; then
             #echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
-	    #rmmod nvidia_drm
-	    #rmmod nvidia_modeset
-	    #rmmod nvidia
+	    rmmod nvidia_drm
+	    rmmod nvidia_modeset
+	    rmmod nvidia
 	    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
 	    echo "Unbound old driver"
     fi
