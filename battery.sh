@@ -14,4 +14,7 @@ xrandr --output eDP --mode 1920x1080 --rate 60
 #sudo sh -c 'echo "\\_SB.PCI0.GPP0.PG00._OFF" > /proc/acpi/call'
 #./gpuoff.sh
 #sleep 0.5; echo "ON" | sudo tee /proc/acpi/bbswitch; sleep 1; echo "OFF" | sudo tee /proc/acpi/bbswitch
+<<<<<<< HEAD
 sudo systemctl restart auto-cpufreq
+=======
+>>>>>>> 4dbc103e37ed3440d42370c1b3251d5ee6faf3e4
