@@ -17,7 +17,7 @@ remmina &
 #looking-glass-client -s -d -g egl -a -M -K 120 &
 #looking-glass-client    -g egl -j -m 283 -S egl:vsync &
 while [ "$command" != "stop" ]; do
-	if jobs | grep looking | grep Running; then
+	if jobs | grep remmina | grep Running; then
 		read command
 	else
 		#looking-glass-client -d -g egl -a -K 120 -j -m 69 -S &

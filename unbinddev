@@ -11,10 +11,10 @@ for dev in "$@"; do
     while [[ -e "/sys/bus/pci/devices/${dev}" ]]; do
         sleep 0.1
     done
-    echo "Rescanning..."
-    echo 1 | sudo tee /sys/bus/pci/rescan
-    while [[ ! -e "/sys/bus/pci/devices/${dev}" ]]; do
-        sleep 0.1
-    done
+    #echo "Rescanning..."
+    #echo 1 | sudo tee /sys/bus/pci/rescan
+    #while [[ ! -e "/sys/bus/pci/devices/${dev}" ]]; do
+    #    sleep 0.1
+    #done
 done
 sudo rmmod vfio-pci
