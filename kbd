@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "${1}" == "pre" ]; then
+	asusctl -k off
+elif [ "${1}" == "post" ]; then
+	brightness=$(cat /sys/class/leds/asus::kbd_backlight/brightness)
+	echo 0 > /sys/class/leds/asus::kbd_backlight/brightness # set 2 different brightnesses to ensure a setting change
+	echo 1 > /sys/class/leds/asus::kbd_backlight/brightness
+	echo $brightness > /sys/class/leds/asus::kbd_backlight/brightness
+fi
