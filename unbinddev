@@ -1,5 +1,6 @@
 #!/bin/bash
 #sudo rmmod vfio-pci
+#returns GPU back to host, and removes it for battery saving
 for dev in "$@"; do
     vendor=$(cat /sys/bus/pci/devices/$dev/vendor)
     device=$(cat /sys/bus/pci/devices/$dev/device)

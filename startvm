@@ -1,11 +1,63 @@
 #!/bin/bash
-#export PATH=/bedrock/cross/pin/bin:/bedrock/bin:/usr/local/bin:/usr/local/sbin:/opt/bin:/opt/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/snap/bin:/bedrock/cross/bin:/home/cole/g14gpu
-cd /home/cole/g14gpu
-#if [ `which-driver-for-gpu` == "nvidia" ]; then
-#sudo sh -c 'echo "ON" > /proc/acpi/bbswitch'
-echo 1 | sudo tee /sys/bus/pci/devices/0000:00:01.0/rescan
+# How to use: switch to asus-nb-ctrl integrated mode, connect dummy or real display, then run this script to start VM
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+cd $DIR
+
+MAIN_GPU="0000:00:01.0" # Actual GPU
+ALL_PARTS="0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3" # GPU + extras (audio, USB-c, etc. everything in the IOMMU group)
+HUGEPAGES_MB=0 # set to 0 if not using dynamic hugepages. note that each page is 2048KiB, so 6144 = 12GiB
+LOOKING_GLASS_FPS=120
+LOOKING_GLASS_ESCAPE=69 # 69 = F12 is escape key (to toggle mouse capture)
+VMNAME=win10
+echo "Reserving hugepages and some other shit"
+echo $HUGEPAGES_MB | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+
+echo 1 | sudo tee /sys/bus/pci/devices/$MAIN_GPU/rescan
 sleep 1
-sudo binddev 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
+sudo binddev $ALL_PARTS
 #fi
-vm
-#sudo unbinddev 0000:01:00.0 0000:01:00.1 0000:01:00.2 0000:01:00.3
+#!/bin/bash
+
+echo 3 | sudo tee /proc/sys/vm/drop_caches
+echo 1 | sudo tee /proc/sys/vm/compact_memory
+echo 0-15 | sudo tee /sys/fs/cgroup/cpuset/machine.slice/cpuset.cpus
+echo "Starting Network"
+virsh --connect=qemu:///system net-start default
+sudo systemctl start smb nmb # comment out if you dont have smb share for linux
+sleep 4
+echo "Starting VM"
+virsh --connect=qemu:///system start $VMNAME
+echo "Starting Scream"
+scream -o pulse -i virbr0 & # scream audio
+echo "Starting Looking Glass"
+looking-glass-client -d -g egl -a -K $LOOKING_GLASS_FPS -j -m $LOOKING_GLASS_ESCAPE -S & 
+# if looking glass crashes, press enter to restart it. if you want to stop VM, type "stop" (then enter)
+
+while [ "$command" != "stop" ]; do 
+	if jobs | grep looking | grep Running; then
+		read command
+	else
+		looking-glass-client -d -g egl -a -K $LOOKING_GLASS_FPS -j -m $LOOKING_GLASS_ESCAPE -S &
+	fi
+done
+sudo whoami # regain root access
+echo "Stopping VM..."
+#stop
+virsh --connect=qemu:///system shutdown $VMNAME
+echo "Killing Looking Glass and Scream..."
+kill -9 $(jobs -p)
+vmstate=$(virsh --connect=qemu:///system domstate $VMNAME)
+echo "Waiting for shutdown..."
+while [ "$vmstate" != "shut off" ]; do
+	sleep 1
+	vmstate=$(virsh --connect=qemu:///system domstate $VMNAME) # wait until virsh reports that VM is stopped
+done
+sleep 1
+echo "VM is off"
+echo "Freeing up memory"
+echo 0 | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+echo "Unbinding from vfio-pci and removing devices"
+unbinddev $ALL_PARTS
+
+sudo systemctl stop smb nmb # stop SMB if in use
