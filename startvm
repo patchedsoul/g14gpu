@@ -15,7 +15,7 @@ echo $HUGEPAGES_MB | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugep
 
 echo 1 | sudo tee /sys/bus/pci/devices/$MAIN_GPU/rescan
 sleep 1
-sudo binddev $ALL_PARTS
+sudo ./binddev $ALL_PARTS
 #fi
 #!/bin/bash
 
@@ -58,6 +58,6 @@ echo "VM is off"
 echo "Freeing up memory"
 echo 0 | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
 echo "Unbinding from vfio-pci and removing devices"
-unbinddev $ALL_PARTS
+sudo ./unbinddev $ALL_PARTS
 
 sudo systemctl stop smb nmb # stop SMB if in use
