@@ -10,6 +10,8 @@ HUGEPAGES_MB=0 # set to 0 if not using dynamic hugepages. note that each page is
 LOOKING_GLASS_FPS=120
 LOOKING_GLASS_ESCAPE=69 # 69 = F12 is escape key (to toggle mouse capture)
 VMNAME=win10
+
+sudo mount -o remount /var/lib/libvirt/images/ # remove this if you're not me
 echo "Reserving hugepages and some other shit"
 echo $HUGEPAGES_MB | sudo tee /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
 
